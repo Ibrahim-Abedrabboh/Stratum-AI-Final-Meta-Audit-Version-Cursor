@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -26,7 +26,7 @@
       --z-sticky: 50; --z-overlay: 100; --z-modal: 200;
     }
 
-    :root, [data-theme="dark"] {
+    html[data-theme="dark"], [data-theme="dark"] {
       --bg-void: #050508; --bg-primary: #0a0a0f; --bg-secondary: #0d0d14;
       --bg-card: #12121a; --bg-card-hover: #1a1a24; --bg-elevated: #1e1e28;
       --bg-input: #0a0a0f; --bg-overlay: rgba(5, 5, 8, 0.9);
@@ -595,20 +595,37 @@
 
   <script>
     const ThemeManager = {
+      resolve(value) {
+        const fromQuery = new URLSearchParams(window.location.search).get('theme');
+        const raw = value || fromQuery || localStorage.getItem('stratum-theme') || 'light';
+        if (raw === 'system') {
+          return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        return raw === 'dark' ? 'dark' : 'light';
+      },
       init() {
-        const saved = localStorage.getItem('stratum-theme');
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        this.set(saved || (prefersDark ? 'dark' : 'light'));
+        this.set(this.resolve(), { persist: false });
         window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-          if (!localStorage.getItem('stratum-theme')) this.set(e.matches ? 'dark' : 'light');
+          if (localStorage.getItem('stratum-theme') === 'system') {
+            this.set(e.matches ? 'dark' : 'light', { persist: false });
+          }
         });
       },
-      set(theme) {
-        document.documentElement.setAttribute('data-theme', theme);
-        localStorage.setItem('stratum-theme', theme);
-        window.dispatchEvent(new CustomEvent('themechange', { detail: { theme } }));
+      set(theme, { persist = true } = {}) {
+        const resolved = theme === 'dark' ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', resolved);
+        if (persist) localStorage.setItem('stratum-theme', resolved);
+        try {
+          const root = window.parent && window.parent !== window ? window.parent.document.documentElement : null;
+          if (root) {
+            root.classList.remove('light', 'dark');
+            root.classList.add(resolved);
+            root.setAttribute('data-theme', resolved);
+          }
+        } catch (e) { /* iframe without parent access */ }
+        window.dispatchEvent(new CustomEvent('themechange', { detail: { theme: resolved } }));
         const announce = document.getElementById('theme-announce');
-        if (announce) announce.textContent = 'Theme changed to ' + theme + ' mode';
+        if (announce) announce.textContent = 'Theme changed to ' + resolved + ' mode';
       },
       toggle() {
         const current = document.documentElement.getAttribute('data-theme');

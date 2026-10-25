@@ -15,21 +15,8 @@ import {
   ExclamationCircleIcon,
 } from '@heroicons/react/24/outline';
 import { useForgotPassword } from '@/api/auth';
-
-// Stratum HoloGlass Theme
-const theme = {
-  primary: '#00c7be',
-  primaryHover: '#c49a2c',
-  primaryLight: 'rgba(0, 199, 190, 0.15)',
-  bgBase: '#0b1215',
-  bgElevated: 'rgba(255, 255, 255, 0.05)',
-  bgSurface: 'rgba(255, 255, 255, 0.03)',
-  textPrimary: '#FFFFFF',
-  textSecondary: 'rgba(255, 255, 255, 0.7)',
-  textMuted: 'rgba(255, 255, 255, 0.5)',
-  border: 'rgba(255, 255, 255, 0.08)',
-  success: '#34c759',
-};
+import { useShellTheme } from '@/lib/shellTheme';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
 
 const forgotPasswordSchema = z.object({
   email: z.string().email('Please enter a valid email'),
@@ -38,6 +25,7 @@ const forgotPasswordSchema = z.object({
 type ForgotPasswordForm = z.infer<typeof forgotPasswordSchema>;
 
 export default function ForgotPassword() {
+  const theme = useShellTheme();
   const [submittedEmail, setSubmittedEmail] = useState('');
   const forgotPasswordMutation = useForgotPassword();
 
@@ -61,9 +49,12 @@ export default function ForgotPassword() {
   if (isSuccess) {
     return (
       <div
-        className="min-h-screen flex items-center justify-center p-6"
+        className="min-h-screen flex items-center justify-center p-6 relative"
         style={{ background: theme.bgElevated }}
       >
+        <div className="absolute top-6 right-6">
+          <ThemeToggle />
+        </div>
         <div className="max-w-md w-full text-center">
           <div
             className="p-8 rounded-2xl"
@@ -93,8 +84,8 @@ export default function ForgotPassword() {
             </p>
             <Link
               to="/login"
-              className="block w-full py-3 rounded-xl text-black font-semibold text-center transition-all duration-200"
-              style={{ background: theme.primary }}
+              className="block w-full py-3 rounded-xl font-semibold text-center transition-all duration-200"
+              style={{ background: theme.primary, color: theme.onPrimary }}
               onMouseEnter={(e) => (e.currentTarget.style.background = theme.primaryHover)}
               onMouseLeave={(e) => (e.currentTarget.style.background = theme.primary)}
             >
@@ -115,9 +106,12 @@ export default function ForgotPassword() {
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center p-6"
+      className="min-h-screen flex items-center justify-center p-6 relative"
       style={{ background: theme.bgElevated }}
     >
+      <div className="absolute top-6 right-6">
+        <ThemeToggle />
+      </div>
       <div className="max-w-md w-full">
         <Link
           to="/login"
@@ -205,8 +199,8 @@ export default function ForgotPassword() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-3 rounded-xl font-semibold text-black transition-all duration-200 disabled:opacity-50"
-              style={{ background: theme.primary }}
+              className="w-full py-3 rounded-xl font-semibold transition-all duration-200 disabled:opacity-50"
+              style={{ background: theme.primary, color: theme.onPrimary }}
               onMouseEnter={(e) => {
                 if (!isLoading) e.currentTarget.style.background = theme.primaryHover;
               }}

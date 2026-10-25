@@ -25,6 +25,7 @@ import { useExportData, useRequestDeletion } from '@/api/hooks';
 import { useCurrentUser, useUpdatePreferences } from '@/api/auth';
 import { useToast } from '@/components/ui/use-toast';
 import { apiClient } from '@/api/client';
+import { useTheme } from '@/contexts/ThemeContext';
 import GA4Integration from '@/components/settings/GA4Integration';
 import GTMIntegration from '@/components/settings/GTMIntegration';
 
@@ -1367,7 +1368,7 @@ function IntegrationSettings() {
 
 function PreferenceSettings() {
   const { t, i18n } = useTranslation();
-  const [theme, setTheme] = useState('system');
+  const { theme, setTheme } = useTheme();
   const [language, setLanguage] = useState(i18n.language);
 
   const handleLanguageChange = (lang: string) => {
@@ -1382,16 +1383,17 @@ function PreferenceSettings() {
       <div>
         <label className="text-sm font-medium mb-2 block">{t('settings.theme')}</label>
         <div className="flex gap-3">
-          {['light', 'dark', 'system'].map((t) => (
+          {(['light', 'dark', 'system'] as const).map((option) => (
             <button
-              key={t}
-              onClick={() => setTheme(t)}
+              key={option}
+              type="button"
+              onClick={() => setTheme(option)}
               className={cn(
                 'px-4 py-2 rounded-lg border transition-colors capitalize',
-                theme === t ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'
+                theme === option ? 'bg-primary text-primary-foreground' : 'hover:bg-muted'
               )}
             >
-              {t}
+              {option}
             </button>
           ))}
         </div>

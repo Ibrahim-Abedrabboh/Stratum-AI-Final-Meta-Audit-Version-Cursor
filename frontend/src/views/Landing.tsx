@@ -34,7 +34,7 @@ export default function Landing() {
   return (
     <>
       <iframe
-        src={`/landing.html${cacheBusterRef.current}`}
+        src={`/landing.html${cacheBusterRef.current}&theme=light`}
         title="Stratum AI - Revenue Intelligence + Trust Layer"
         style={{
           position: 'fixed',

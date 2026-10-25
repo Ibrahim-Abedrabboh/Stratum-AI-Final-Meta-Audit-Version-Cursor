@@ -42,7 +42,13 @@ interface FacebookLoginButtonProps {
   /** Disables the button while the page is busy with another sign-in. */
   disabled?: boolean;
   label?: string;
-  /** Theme tokens from the calling page, so the button matches its surface. */
+  /**
+   * Optional "or" rule so the password form and Facebook stay visually
+   * separate. `after` is for social-first layouts (login); `before` is for
+   * Facebook sitting under a password submit (signup).
+   */
+  divider?: 'before' | 'after' | 'none';
+  /** Theme tokens from the calling page, so the muted divider matches. */
   theme?: {
     textPrimary: string;
     textMuted: string;
@@ -58,8 +64,9 @@ const DEFAULT_THEME = {
   bgCard: 'rgba(18, 18, 26, 0.9)',
 };
 
-/** Meta's brand blue, used only for the mark rather than the whole button. */
+/** Meta's brand blue for the full-width Continue with Facebook control. */
 const FACEBOOK_BLUE = '#1877F2';
+const FACEBOOK_BLUE_HOVER = '#166FE5';
 
 function FacebookMark() {
   return (
@@ -69,10 +76,22 @@ function FacebookMark() {
       viewBox="0 0 24 24"
       aria-hidden="true"
       focusable="false"
-      fill={FACEBOOK_BLUE}
+      fill="#FFFFFF"
     >
       <path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.412c0-3.026 1.792-4.697 4.533-4.697 1.313 0 2.686.236 2.686.236v2.965H15.83c-1.49 0-1.955.93-1.955 1.886v2.271h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z" />
     </svg>
+  );
+}
+
+function OrDivider({ color }: { color: string }) {
+  return (
+    <div className="flex items-center gap-3 my-5" role="separator" aria-label="or">
+      <div className="flex-1 h-px" style={{ background: color }} />
+      <span className="text-xs uppercase tracking-widest" style={{ color }}>
+        or
+      </span>
+      <div className="flex-1 h-px" style={{ background: color }} />
+    </div>
   );
 }
 
@@ -81,6 +100,7 @@ export default function FacebookLoginButton({
   onError,
   disabled = false,
   label = 'Continue with Facebook',
+  divider = 'none',
   theme = DEFAULT_THEME,
 }: FacebookLoginButtonProps) {
   const { data: config, isLoading } = useFacebookLoginConfig();
@@ -137,23 +157,32 @@ export default function FacebookLoginButton({
 
   return (
     <div>
+      {divider === 'before' ? <OrDivider color={theme.border} /> : null}
       <button
         type="button"
+        data-testid="facebook-login-button"
         onClick={handleClick}
         disabled={disabled || isBusy}
         aria-busy={isBusy}
-        className="w-full flex items-center justify-center gap-3 rounded-xl px-4 transition-opacity disabled:opacity-60 disabled:cursor-not-allowed"
+        aria-label={label}
+        className="w-full flex items-center justify-center gap-3 rounded-2xl px-4 font-semibold text-white transition-opacity disabled:opacity-60 disabled:cursor-not-allowed"
         style={{
           minHeight: 48,
-          background: theme.bgCard,
-          border: `1px solid ${theme.border}`,
-          color: theme.textPrimary,
-          fontWeight: 600,
+          background: FACEBOOK_BLUE,
+        }}
+        onMouseEnter={(event) => {
+          if (!disabled && !isBusy) {
+            event.currentTarget.style.background = FACEBOOK_BLUE_HOVER;
+          }
+        }}
+        onMouseLeave={(event) => {
+          event.currentTarget.style.background = FACEBOOK_BLUE;
         }}
       >
         <FacebookMark />
         <span>{isBusy ? 'Connecting to Facebook…' : label}</span>
       </button>
+      {divider === 'after' ? <OrDivider color={theme.border} /> : null}
 
       {localError ? (
         <p role="alert" className="mt-2 text-sm" style={{ color: theme.textMuted }}>

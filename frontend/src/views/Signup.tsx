@@ -22,32 +22,17 @@ import { pageSEO, SEO } from '@/components/common/SEO';
 import { useAuth } from '@/contexts/AuthContext';
 import FacebookLoginButton from '@/components/auth/FacebookLoginButton';
 import type { FacebookCredential } from '@/lib/facebookSdk';
-
-// Stratum Theme v4.0 - Trust-Gated Autopilot
-const theme = {
-  primary: '#00c7be', // Stratum Gold
-  primaryLight: 'rgba(0, 199, 190, 0.15)',
-  primaryBright: '#f0c95c',
-  green: '#34c759', // Status Success
-  orange: '#f59e0b', // Status Warning
-  purple: '#8b5cf6', // Accent Purple
-  cyan: '#00c7be', // Accent Cyan
-  bgVoid: '#050508', // Deepest background
-  bgBase: '#0b1215', // Deep navy black
-  bgCard: 'rgba(18, 18, 26, 0.9)', // Card background
-  textPrimary: '#FFFFFF',
-  textSecondary: 'rgba(255, 255, 255, 0.7)',
-  textMuted: 'rgba(255, 255, 255, 0.5)',
-  border: 'rgba(255, 255, 255, 0.06)',
-  borderHover: 'rgba(255, 255, 255, 0.10)',
-  borderGold: 'rgba(0, 199, 190, 0.15)',
-  success: '#34c759',
-  goldGlow: 'rgba(0, 199, 190, 0.5)',
-  goldSubtle: 'rgba(0, 199, 190, 0.1)',
-};
+import { useShellTheme } from '@/lib/shellTheme';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
 
 // HUD Corner component for sci-fi styling
-const HUDCorner = ({ position }: { position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right' }) => {
+const HUDCorner = ({
+  position,
+  primary,
+}: {
+  position: 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+  primary: string;
+}) => {
   const styles: Record<string, React.CSSProperties> = {
     'top-left': { top: 20, left: 20, borderRight: 'none', borderBottom: 'none' },
     'top-right': { top: 20, right: 20, borderLeft: 'none', borderBottom: 'none' },
@@ -60,7 +45,7 @@ const HUDCorner = ({ position }: { position: 'top-left' | 'top-right' | 'bottom-
       style={{
         width: 60,
         height: 60,
-        border: `2px solid ${theme.primary}`,
+        border: `2px solid ${primary}`,
         opacity: 0.4,
         zIndex: 1,
         ...styles[position],
@@ -86,6 +71,7 @@ type SignupForm = z.infer<typeof signupSchema>;
 
 export default function Signup() {
   const navigate = useNavigate();
+  const theme = useShellTheme();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -153,10 +139,10 @@ export default function Signup() {
       <SEO {...pageSEO.signup} />
 
       {/* HUD Corners */}
-      <HUDCorner position="top-left" />
-      <HUDCorner position="top-right" />
-      <HUDCorner position="bottom-left" />
-      <HUDCorner position="bottom-right" />
+      <HUDCorner position="top-left" primary={theme.primary} />
+      <HUDCorner position="top-right" primary={theme.primary} />
+      <HUDCorner position="bottom-left" primary={theme.primary} />
+      <HUDCorner position="bottom-right" primary={theme.primary} />
 
       {/* Ambient orbs background */}
       <div
@@ -255,6 +241,9 @@ export default function Signup() {
 
       {/* RIGHT PANEL - SIGNUP FORM */}
       <div className="flex-1 flex items-center justify-center p-8 relative z-10">
+        <div className="absolute top-6 right-6">
+          <ThemeToggle />
+        </div>
         <div className="w-full max-w-md">
           {/* Mobile logo */}
           <div className="lg:hidden flex items-center justify-center gap-3 mb-10">
@@ -504,10 +493,11 @@ export default function Signup() {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-3.5 rounded-2xl font-semibold text-black transition-all duration-200 disabled:opacity-50 mt-2"
+                className="w-full py-3.5 rounded-2xl font-semibold transition-all duration-200 disabled:opacity-50 mt-2"
                 style={{
                   background: theme.primary,
-                  boxShadow: '0 0 30px rgba(0, 199, 190, 0.2)',
+                  color: theme.onPrimary,
+                  boxShadow: `0 0 30px ${theme.goldSubtle}`,
                 }}
                 onMouseEnter={(e) => {
                   if (!isLoading) {
@@ -553,6 +543,7 @@ export default function Signup() {
                 onError={setFacebookError}
                 disabled={isLoading}
                 label="Sign up with Facebook"
+                divider="before"
                 theme={{
                   textPrimary: theme.textPrimary,
                   textMuted: theme.textMuted,

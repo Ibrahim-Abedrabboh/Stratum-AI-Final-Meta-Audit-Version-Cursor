@@ -3,7 +3,7 @@
  * Matches landing page with purple/cyan gradients
  */
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -63,29 +63,8 @@ import { NeuralNetworkBg } from '@/components/ui/NeuralNetworkBg';
 import { TrustGateIndicator } from '@/components/ui/TrustGateIndicator';
 import { OnboardingChat, OnboardingChatButton } from '@/components/onboarding';
 import { isHiddenInPortalLaunch } from '@/lib/portalLaunch';
-
-// Stratum AI Dashboard Theme - Midnight Teal Glass
-const theme = {
-  primary: '#00c7be',                     // Midnight Teal
-  primaryLight: 'rgba(0, 199, 190, 0.15)',
-  gold: '#e2b347',                        // CTA accent
-  green: '#34c759',                       // Jade
-  orange: '#f59e0b',
-  purple: '#a78bfa',
-  cyan: '#00c7be',
-  bgBase: '#0b1215',                      // Midnight Ocean
-  bgCard: 'rgba(255, 255, 255, 0.05)',    // Glass surface
-  bgSurface: 'rgba(255, 255, 255, 0.08)',
-  bgOverlay: 'rgba(11, 18, 21, 0.75)',
-  textPrimary: 'rgba(245, 245, 247, 0.92)',
-  textSecondary: 'rgba(245, 245, 247, 0.6)',
-  textMuted: 'rgba(245, 245, 247, 0.35)',
-  border: 'rgba(255, 255, 255, 0.08)',
-  borderHover: 'rgba(255, 255, 255, 0.15)',
-  borderGold: 'rgba(226, 179, 71, 0.2)',
-  success: '#34c759',
-  danger: '#ff6b6b',
-};
+import { useShellTheme } from '@/lib/shellTheme';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
 
 const navigation = [
   {
@@ -158,6 +137,7 @@ export default function DashboardLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const theme = useShellTheme();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [learningHubOpen, setLearningHubOpen] = useState(false);
@@ -172,13 +152,6 @@ export default function DashboardLayout() {
   const [shortcutsOpen, setShortcutsOpen] = useState(false);
   const [onboardingChatOpen, setOnboardingChatOpen] = useState(false);
   const { hasNewUpdates } = useWhatsNew();
-
-  // Set dark theme
-  useEffect(() => {
-    document.documentElement.classList.remove('light');
-    document.documentElement.classList.add('dark');
-    localStorage.setItem('stratum-theme', 'dark');
-  }, []);
 
   const toggleLanguage = () => {
     const newLang = i18n.language === 'en' ? 'ar' : 'en';
@@ -644,6 +617,8 @@ export default function DashboardLayout() {
 
             {/* Header actions */}
             <div className="flex items-center gap-2">
+              <ThemeToggle />
+
               <button
                 className="p-2 rounded-xl transition-colors"
                 style={{ color: theme.textMuted }}

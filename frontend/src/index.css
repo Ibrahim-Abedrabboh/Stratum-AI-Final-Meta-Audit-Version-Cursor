@@ -267,7 +267,7 @@
   /* ============================================
      LIGHT THEME - Stratum HoloGlass Light
   ============================================ */
-  [data-theme="light"] {
+  .light, [data-theme="light"] {
     /* Backgrounds */
     --bg-void: #f8f9fc;
     --bg-primary: #ffffff;

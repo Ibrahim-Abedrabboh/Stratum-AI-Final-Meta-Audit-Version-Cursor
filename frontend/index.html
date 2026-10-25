@@ -2,6 +2,27 @@
 <html lang="en" dir="ltr" class="dark">
   <head>
     <meta charset="UTF-8" />
+    <script>
+      // Apply stored theme before first paint to avoid a dark flash on light.
+      (function() {
+        try {
+          var stored = localStorage.getItem('stratum-theme') || 'dark';
+          var resolved = stored;
+          if (stored === 'system') {
+            resolved = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          }
+          if (resolved !== 'light' && resolved !== 'dark') {
+            resolved = 'dark';
+          }
+          document.documentElement.classList.remove('light', 'dark');
+          document.documentElement.classList.add(resolved);
+          document.documentElement.setAttribute('data-theme', resolved);
+        } catch (e) {
+          document.documentElement.classList.add('dark');
+          document.documentElement.setAttribute('data-theme', 'dark');
+        }
+      })();
+    </script>
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
@@ -14,7 +35,7 @@
 
     <!-- Theme Colors -->
     <meta name="theme-color" content="#0a0a0f" media="(prefers-color-scheme: dark)" />
-    <meta name="theme-color" content="#0a0a0f" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#f8fafc" media="(prefers-color-scheme: light)" />
     <meta name="msapplication-navbutton-color" content="#0a0a0f" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -130,36 +151,36 @@
          LIGHT THEME - HoloGlass Light variant
       ============================================ */
       .light {
-        --bg-base: #0a0a0f;
-        --bg-elevated: #12121a;
-        --bg-surface: #1a1a24;
-        --bg-card: rgba(255, 255, 255, 0.03);
-        --bg-hover: rgba(255, 255, 255, 0.05);
-        --bg-active: rgba(212, 175, 55, 0.15);
+        --bg-base: #f8fafc;
+        --bg-elevated: #ffffff;
+        --bg-surface: #f1f5f9;
+        --bg-card: rgba(255, 255, 255, 0.92);
+        --bg-hover: rgba(15, 23, 42, 0.04);
+        --bg-active: rgba(13, 148, 136, 0.12);
 
-        --border-subtle: rgba(255, 255, 255, 0.06);
-        --border-default: rgba(255, 255, 255, 0.08);
-        --border-emphasis: rgba(212, 175, 55, 0.2);
-        --border-gold: rgba(212, 175, 55, 0.1);
+        --border-subtle: rgba(15, 23, 42, 0.06);
+        --border-default: rgba(15, 23, 42, 0.10);
+        --border-emphasis: rgba(13, 148, 136, 0.28);
+        --border-gold: rgba(184, 134, 11, 0.2);
 
-        --text-primary: #ffffff;
-        --text-secondary: rgba(255, 255, 255, 0.7);
-        --text-muted: rgba(255, 255, 255, 0.5);
-        --text-faint: rgba(255, 255, 255, 0.3);
+        --text-primary: #0f172a;
+        --text-secondary: #334155;
+        --text-muted: #64748b;
+        --text-faint: #94a3b8;
 
-        --accent-primary: #D4AF37;
-        --accent-secondary: #14F0C6;
-        --accent-gradient: linear-gradient(135deg, #D4AF37 0%, #F4D03F 100%);
+        --accent-primary: #0d9488;
+        --accent-secondary: #0d9488;
+        --accent-gradient: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%);
 
-        --status-success: #22C55E;
-        --status-warning: #F59E0B;
-        --status-error: #EF4444;
-        --status-info: #14F0C6;
+        --status-success: #16a34a;
+        --status-warning: #d97706;
+        --status-error: #dc2626;
+        --status-info: #0d9488;
 
-        --glow-gold: rgba(212, 175, 55, 0.3);
-        --glow-cyan: rgba(20, 240, 198, 0.2);
+        --glow-gold: rgba(184, 134, 11, 0.18);
+        --glow-cyan: rgba(13, 148, 136, 0.18);
 
-        color-scheme: dark;
+        color-scheme: light;
       }
 
       /* ============================================
@@ -270,13 +291,5 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-    <script>
-      // Initialize theme - HoloGlass is always dark
-      (function() {
-        document.documentElement.classList.remove('light');
-        document.documentElement.classList.add('dark');
-        localStorage.setItem('stratum-theme', 'dark');
-      })();
-    </script>
   </body>
 </html>
